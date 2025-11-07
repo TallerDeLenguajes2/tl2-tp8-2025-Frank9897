@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-// Asegúrate de que este 'using' coincida con la ubicación real de tu clase Productos y ProductoRepository
-// Por ejemplo: using TuProyecto.Models; o usando el namespace correcto.
+
 
 public class ProductoController : Controller
 {
@@ -14,7 +13,6 @@ public class ProductoController : Controller
         _productoRepository = new ProductoRepository(); // En un proyecto real, se usaría Inyección de Dependencias
     }
 
-    // GET: /Producto/
     // Muestra la lista de todos los productos
     public IActionResult Index()
     {
@@ -22,7 +20,6 @@ public class ProductoController : Controller
         return View(productos);
     }
 
-    // GET: /Producto/Detalle/5
     // Muestra los detalles de un producto específico
     public IActionResult Detalle(int id)
     {
@@ -34,14 +31,12 @@ public class ProductoController : Controller
         return View(producto);
     }
 
-    // GET: /Producto/Crear
     // Muestra el formulario para crear un nuevo producto
     public IActionResult Crear()
     {
         return View();
     }
 
-    // POST: /Producto/Crear
     // Procesa el formulario para crear un nuevo producto
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -56,7 +51,6 @@ public class ProductoController : Controller
         return View(producto);
     }
 
-    // GET: /Producto/Editar/5
     // Muestra el formulario para editar un producto existente
     public IActionResult Editar(int id)
     {
@@ -68,7 +62,6 @@ public class ProductoController : Controller
         return View(producto);
     }
 
-    // POST: /Producto/Editar/5
     // Procesa el formulario para actualizar un producto
     [HttpPost]
     [ValidateAntiForgeryToken]

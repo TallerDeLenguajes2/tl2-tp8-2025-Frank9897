@@ -3,7 +3,7 @@ using Microsoft.Data.Sqlite;
 
 public class ProductoRepository
 {
-    private string cadenaDeConexion = "Data Source = Tienda.db;";
+    private string cadenaDeConexion = "Data Source = DB/Tienda.db;";
     public List<Productos> GetAll()
     {
         List<Productos> lista = new List<Productos>();
