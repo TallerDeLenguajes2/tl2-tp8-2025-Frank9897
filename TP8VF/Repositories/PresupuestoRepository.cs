@@ -3,7 +3,7 @@ using Microsoft.Data.Sqlite;
 
 public class PresupuestosRepository
 {
-    private string cadenaDeConexion = "Data Source = DB/Tienda.db;";
+    private string cadenaDeConexion = "Data Source = Tienda.db;";
 
     //Crear un nuevo presupuesto
     public void crearPresupuesto(Presupuestos p)
@@ -11,7 +11,7 @@ public class PresupuestosRepository
         using (var conexion = new SqliteConnection(cadenaDeConexion))
         {
             conexion.Open();
-            string sql = "INSERT INTO Presupuestos (NombreDestinatario, FechaCreacion) VALUES (@nombre, @fecha);";
+            string sql = "INSERT INTO Presupuestos (nombreDestinatario, fechaCreacion) VALUES (@nombre, @fecha);";
 
             using (SqliteCommand comando = new SqliteCommand(sql, conexion))
             {
@@ -42,8 +42,8 @@ public class PresupuestosRepository
                     var p = new Presupuestos
                     (
                         Convert.ToInt32(lector["idPresupuesto"]),
-                        lector["NombreDestinatario"].ToString(),
-                        Convert.ToDateTime(lector["FechaCreacion"]),
+                        lector["nombreDestinatario"].ToString(),
+                        Convert.ToDateTime(lector["fechaCreacion"]),
                         new List<PresupuestoDetalles>()
                     );
                     listaPresupuestos.Add(p);
@@ -75,8 +75,8 @@ public class PresupuestosRepository
                         presupuestos = new Presupuestos
                         (
                             Convert.ToInt32(lector["idPresupuesto"]),
-                            lector["NombreDestinatario"].ToString(),
-                            Convert.ToDateTime(lector["FechaCreacion"]),
+                            lector["nombreDestinatario"].ToString(),
+                            Convert.ToDateTime(lector["fechaCreacion"]),
                             new List<PresupuestoDetalles>()
                         );
                     }
@@ -85,7 +85,7 @@ public class PresupuestosRepository
             if (presupuestos != null)
             {
                 string sqlDetalle = @"
-                    SELECT pd.cantidad, pr.idProducto, pr.descripcion, pr.precio FROM PresupuestosDetalle pd
+                    SELECT pd.cantidad, pr.idProducto, pr.descripcion, pr.precio FROM presupuestoDetalles pd
                     INNER JOIN Productos pr ON pd.idProducto = pr.idProducto
                     WHERE pd.idPresupuesto = @id";
 
@@ -97,9 +97,9 @@ public class PresupuestosRepository
                         while (lector.Read())
                         {
                             var producto = new Productos(
-                                Convert.ToInt32(lector["IdProducto"]),
-                                lector["Descripcion"].ToString(),
-                                Convert.ToInt32(lector["Precio"])
+                                Convert.ToInt32(lector["idProducto"]),
+                                lector["descripcion"].ToString(),
+                                Convert.ToInt32(lector["precio"])
                             );
                             var detalle = new PresupuestoDetalles(producto, Convert.ToInt32(lector["cantidad"]));
                             presupuestos.Detalles.Add(detalle);
@@ -152,6 +152,47 @@ public class PresupuestosRepository
                 comando.Parameters.AddWithValue("@id", id);
                 int filasAfectadas = comando.ExecuteNonQuery();
                 return filasAfectadas > 0;
+            }
+        }
+    }
+
+    //Eliminar un producto
+
+    public void EliminarProducto(int idPresupuesto, int idProducto)
+    {
+        using (var conexion = new SqliteConnection(cadenaDeConexion))
+        {
+            conexion.Open();
+            string sql = "DELETE FROM presupuestoDetalles WHERE idPresupuesto = @idP AND idProducto = @idProd";
+
+            using (var comando = new SqliteCommand(sql, conexion))
+            {
+                comando.Parameters.AddWithValue("@idP", idPresupuesto);
+                comando.Parameters.AddWithValue("@idProd", idProducto);
+
+                comando.ExecuteNonQuery();
+            }
+        }
+
+    }
+
+    //Modificar cantidad
+
+    public void ModificarCantidad(int idPresupuesto, int idProducto, int nuevaCantidad)
+    {
+        using (var conexion = new SqliteConnection(cadenaDeConexion))
+        {
+            conexion.Open();
+
+            string sql = "UPDATE presupuestoDetalles SET cantidad = @cant WHERE idPresupuesto = @idP AND idProducto = @idProd";
+
+            using (var comando = new SqliteCommand(sql, conexion))
+            {
+                comando.Parameters.AddWithValue("@cant", nuevaCantidad);
+                comando.Parameters.AddWithValue("@idP",idPresupuesto);
+                comando.Parameters.AddWithValue("@idProd", idProducto);
+
+                comando.ExecuteNonQuery();
             }
         }
     }

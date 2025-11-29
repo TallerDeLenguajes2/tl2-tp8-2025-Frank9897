@@ -1,62 +1,63 @@
 @model Presupuestos
 
-<h1>Detalle del Presupuesto</h1>
+<h2>Detalle del Presupuesto</h2>
 
-<hr />
+<h4>Datos del Presupuesto</h4>
+<p><b>Destinatario:</b> @Model.NombreDestinatario</p>
+<p><b>Fecha:</b> @Model.FechaCreacion</p>
+<p><b>Total:</b> $@Model.MontoPresupuesto()</p>
+<p><b>Total con IVA:</b> $@Model.MontoPresupuestoIVA()</p>
 
-<h3>Encabezado</h3>
+<h4>Productos del Presupuesto</h4>
+
 <table class="table table-bordered">
-    <tr>
-        <th>ID Presupuesto</th>
-        <td>@Model.IdPresupuesto</td>
-    </tr>
-    <tr>
-        <th>Destinatario</th>
-        <td>@Model.NombreDestinatario</td>
-    </tr>
-    <tr>
-        <th>Fecha de Creación</th>
-        <td>@Model.FechaCreacion.ToShortDateString()</td>
-    </tr>
-</table>
-
-<hr />
-
-<h3>🛒 Productos Agregados</h3>
-
-@if (Model.Detalles.Count == 0)
-{
-    <p>No hay productos cargados en este presupuesto.</p>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+            <th>Acciones</th>
+            <th>Editar</th>
+        </tr>
+    </thead>
+    <tbody>
         @foreach (var d in Model.Detalles)
         {
             <tr>
                 <td>@d.Producto.Descripcion</td>
-                <td>@d.Producto.Precio</td>
+                <td>$@d.Producto.Precio</td>
                 <td>@d.Cantidad</td>
-                <td>@(d.Producto.Precio * d.Cantidad)</td>
+                <td>$@(d.Cantidad * d.Producto.Precio)</td>
+                <td>
+                    <a class="btn btn-danger"
+                        asp-controller="Presupuestos"
+                        asp-action="DeleteProd"
+                        asp-route-idPresupuesto="@Model.IdPresupuesto"
+                        asp-route-idProducto="@d.Producto.IdProducto">
+                            Eliminar
+                    </a>
+                </td>
+                <td>
+                    <a class="btn btn-warning"
+                        asp-controller="Presupuestos"
+                        asp-action="EditProduct"
+                        asp-route-idPresupuesto="@Model.IdPresupuesto"
+                        asp-route-idProducto="@d.Producto.IdProducto">
+                        Editar
+                    </a>
+                </td>
             </tr>
         }
-        </tbody>
-    </table>
-}
+    </tbody>
+</table>
 
-<hr />
+<a class="btn btn-success"
+   asp-controller="Presupuestos"
+   asp-action="AddProduct"
+   asp-route-id="@Model.IdPresupuesto">
+    Agregar Producto
+</a>
 
-<h3>💰 Monto Final</h3>
-<p><b>Subtotal:</b> @Model.MontoPresupuesto() </p>
-<p><b>Total con IVA (21%):</b> @Model.MontoPresupuestoIVA() </p>
 
-<a asp-action="Index" class="btn btn-secondary">Volver</a>
+<a class="btn btn-primary" href="/Presupuestos">Volver</a>

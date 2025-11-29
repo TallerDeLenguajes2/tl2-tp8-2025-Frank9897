@@ -7,12 +7,15 @@ public class PresupuestosController : Controller
     {
         repo = new PresupuestosRepository();
     }   
+
+    //Listar presupuestos
     public IActionResult Index()
     {
         var lista = repo.GetAll();
         return View(lista);
     }
 
+    //Detalles de los presupuestos
 
     public IActionResult Details(int id)
     {
@@ -22,5 +25,56 @@ public class PresupuestosController : Controller
             return NotFound();
         }
         return View(presupuesto);
+    }
+
+    //Agregar productos
+
+    public IActionResult AddProduct(int id)
+    {
+        var prodRepo = new ProductoRepository();
+        var listaprod = prodRepo.GetAll();
+
+        ViewBag.IdPresupuesto = id;
+        return View(listaprod);
+    }
+
+    [HttpPost]
+    public IActionResult AddProduct(int idPresupuesto, int idProducto, int cantidad)
+    {
+        repo.AgregarProducto(idPresupuesto, idProducto, cantidad);
+        return RedirectToAction("Details", new{id = idPresupuesto});
+    }
+
+    //Eliminar productos del presupuesto
+    public IActionResult DeleteProd(int idPresupuesto, int idProducto)
+    {
+        repo.EliminarProducto(idPresupuesto, idProducto);
+        return RedirectToAction("Details", new{id = idPresupuesto});
+    }
+
+    //Modificar la cantidad
+
+    [HttpGet]
+    public IActionResult EditProduct(int idPresupuesto, int idProducto)//Mostrar formulario
+    {
+        var presupuesto  = repo.GetById(idPresupuesto);
+
+        var detalle = presupuesto.Detalles.FirstOrDefault(d => d.Producto.IdProducto == idProducto);
+
+        if (detalle == null)
+        {
+            return NotFound();
+        }
+        ViewBag.IdPresupuesto = idPresupuesto;
+        ViewBag.IdProducto = idProducto;
+        return View(detalle);
+    }
+
+    [HttpPost]
+    public IActionResult EditProduct(int idPresupuesto, int idProducto, int cantidad)
+    {
+        repo.ModificarCantidad(idPresupuesto, idProducto, cantidad);
+
+        return RedirectToAction("Details", new{id = idPresupuesto});
     }
 }

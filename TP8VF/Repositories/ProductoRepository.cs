@@ -3,7 +3,9 @@ using Microsoft.Data.Sqlite;
 
 public class ProductoRepository
 {
-    private string cadenaDeConexion = "Data Source = DB/Tienda.db;";
+    private string cadenaDeConexion = "Data Source = Tienda.db;";
+
+    //Listar los productos
     public List<Productos> GetAll()
     {
         List<Productos> lista = new List<Productos>();
@@ -29,6 +31,7 @@ public class ProductoRepository
         }
     }
 
+    //Obtener un producto por ID
     public Productos GetById(int id)
     {
         Productos p = null;
@@ -45,7 +48,7 @@ public class ProductoRepository
                     {
                         p = new Productos
                         (
-                            Convert.ToInt32(lector["idProductos"]),
+                            Convert.ToInt32(lector["idProducto"]),
                             lector["descripcion"].ToString(),
                             Convert.ToInt32(lector["precio"])
                         );
@@ -56,7 +59,7 @@ public class ProductoRepository
         return p;
     }
 
-
+    //Crear un producto por ID
     public void Alta(Productos p)
     {
         using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))
@@ -72,12 +75,13 @@ public class ProductoRepository
         }
     }
 
+    //Modificar un producto existente
     public bool Modificar(int id, Productos p)
     {
         using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))
         {
             conexion.Open();
-            string sql = "UPDATE Productos SET descripcion = @descripcion, precio = @precio";
+            string sql = "UPDATE Productos SET descripcion = @descripcion, precio = @precio WHERE idProducto = @id";
             using (SqliteCommand comando = new SqliteCommand(sql, conexion))
             {
                 comando.Parameters.AddWithValue("@descripcion", p.Descripcion);
@@ -90,7 +94,7 @@ public class ProductoRepository
         }
     }
     
-
+    //Eliminar un producto existente por ID
     public bool Eliminar(int id)
     {
         using (SqliteConnection conexion = new SqliteConnection(cadenaDeConexion))
